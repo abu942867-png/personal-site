@@ -1028,10 +1028,9 @@ Creative Director
     if (window.__gzmSoundUnlocked) return;
     window.__gzmSoundUnlocked = true;
     document.querySelectorAll(".gzm-project-video").forEach(function (v) {
-      if (v.dataset.wantSound === "1") {
-        v.muted = false;
-        v.play().catch(function () {});
-      }
+      /* Only unmute here; play/pause stays under the IntersectionObserver
+         so off-screen videos never make sound. */
+      if (v.dataset.wantSound === "1") v.muted = false;
     });
   }
   document.addEventListener("pointerdown", gzmUnlockSound);
