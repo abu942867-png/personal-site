@@ -19,10 +19,15 @@
     }
   }
 
-  var shell = document.createElement("div");
-  shell.className = "parallel-moon-shell";
-  moon.parentNode.insertBefore(shell, moon);
-  shell.appendChild(moon);
+  /* Reuse the shell from the HTML markup when present (so the new-moon sphere
+     renders with the very first paint); otherwise build it as before. */
+  var shell = system.querySelector(".parallel-moon-shell");
+  if (!shell) {
+    shell = document.createElement("div");
+    shell.className = "parallel-moon-shell";
+    moon.parentNode.insertBefore(shell, moon);
+    shell.appendChild(moon);
+  }
 
   var aura = document.createElement("span");
   aura.className = "parallel-moon-aura";
