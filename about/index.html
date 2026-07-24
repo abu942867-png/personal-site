@@ -548,31 +548,18 @@ html.about-copy-ready.welcome-title-blocked #about-who-title-main-welcome {
    The former gear nodes are redrawn as concentric astrolabe/orbit rings. */
 .parallel-gears {
   --moon-size: clamp(11.5rem, 29vmin, 23rem);
-  --phase-angle: 0deg;
   left: 50%;
   top: 50%;
   width: min(84vmin, 64rem);
   height: min(84vmin, 64rem);
   transform: translate(-50%, -50%);
 }
-.parallel-gears::before,
 .parallel-gears::after {
   content: "";
   position: absolute;
   left: 50%;
   top: 50%;
   pointer-events: none;
-}
-.parallel-gears::before {
-  width: 96%;
-  height: 96%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: conic-gradient(from -90deg, rgba(236,220,174,.82) 0 var(--phase-angle), rgba(154,137,96,.12) var(--phase-angle) 360deg);
-  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 1px), #000 50%);
-  mask: radial-gradient(circle, transparent 0 calc(50% - 1px), #000 50%);
-  filter: drop-shadow(0 0 8px rgba(225,207,157,.18));
-  opacity: .78;
 }
 .parallel-gears::after {
   width: 76%;
@@ -753,35 +740,14 @@ html.about-copy-ready.welcome-title-blocked #about-who-title-main-welcome {
   font-variant-numeric: tabular-nums;
   text-shadow: 0 0 12px rgba(224,211,174,.18);
 }
-.parallel-progress-value {
-  display: block;
-  font-size: clamp(.78rem, 1.1vw, .98rem);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: .23em;
-}
 .parallel-progress-phase {
   display: block;
-  margin-top: .68rem;
+  margin-top: 0;
   color: rgba(167,157,130,.66);
   font-size: clamp(.48rem, .62vw, .62rem);
   line-height: 1;
   letter-spacing: .21em;
   text-transform: uppercase;
-}
-.parallel-progress::before,
-.parallel-progress::after {
-  content: "";
-  position: absolute;
-  top: .34rem;
-  width: 2.2rem;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(178,159,107,.4));
-}
-.parallel-progress::before { right: calc(100% + .7rem); }
-.parallel-progress::after {
-  left: calc(100% + .7rem);
-  transform: scaleX(-1);
 }
 @keyframes lunar-orbit-spin {
   from { transform: translate(-50%, -50%) rotate(var(--orbit-start)); }
@@ -798,8 +764,6 @@ html.about-copy-ready.welcome-title-blocked #about-who-title-main-welcome {
     height: 96vmin;
   }
   .parallel-progress { bottom: 2%; }
-  .parallel-progress::before,
-  .parallel-progress::after { width: 1.25rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   #preloader::before,

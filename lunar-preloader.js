@@ -41,11 +41,9 @@
   progress.setAttribute("aria-label", "Loading");
   progress.setAttribute("aria-valuemin", "0");
   progress.setAttribute("aria-valuemax", "100");
-  progress.innerHTML = '<span class="parallel-progress-value">000%</span>' +
-    '<span class="parallel-progress-phase">NEW MOON</span>';
+  progress.innerHTML = '<span class="parallel-progress-phase">NEW MOON</span>';
   system.appendChild(progress);
 
-  var valueLabel = progress.querySelector(".parallel-progress-value");
   var phaseLabel = progress.querySelector(".parallel-progress-phase");
   var context = canvas.getContext("2d");
   var latestProgress = 0;
@@ -95,11 +93,9 @@
 
     var percent = Math.min(100, Math.round(value * 100));
     var label = phaseName(value);
-    valueLabel.textContent = String(percent).padStart(3, "0") + "%";
     phaseLabel.textContent = label;
     progress.setAttribute("aria-valuenow", String(percent));
     progress.setAttribute("aria-valuetext", label + ", " + percent + " percent");
-    system.style.setProperty("--phase-angle", (value * 360).toFixed(2) + "deg");
     shell.style.setProperty("--phase-glow", (.08 + value * .84).toFixed(3));
     shell.style.setProperty("--phase-scale", (value * .12).toFixed(3));
     drawMoonPhase(value);
