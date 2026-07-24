@@ -544,6 +544,270 @@ html.about-copy-ready.welcome-title-blocked #about-who-title-main-welcome {
   0%, 100% { transform: scale(1); opacity: .92; }
   50% { transform: scale(1.018); opacity: 1; }
 }
+/* Lunar preloader: real asset progress travels from new moon to full moon.
+   The former gear nodes are redrawn as concentric astrolabe/orbit rings. */
+.parallel-gears {
+  --moon-size: clamp(11.5rem, 29vmin, 23rem);
+  --phase-angle: 0deg;
+  left: 50%;
+  top: 50%;
+  width: min(84vmin, 64rem);
+  height: min(84vmin, 64rem);
+  transform: translate(-50%, -50%);
+}
+.parallel-gears::before,
+.parallel-gears::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+}
+.parallel-gears::before {
+  width: 96%;
+  height: 96%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(from -90deg, rgba(236,220,174,.82) 0 var(--phase-angle), rgba(154,137,96,.12) var(--phase-angle) 360deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 1px), #000 50%);
+  mask: radial-gradient(circle, transparent 0 calc(50% - 1px), #000 50%);
+  filter: drop-shadow(0 0 8px rgba(225,207,157,.18));
+  opacity: .78;
+}
+.parallel-gears::after {
+  width: 76%;
+  height: 76%;
+  transform: translate(-50%, -50%) rotate(-11deg) scaleY(.31);
+  border: 1px solid rgba(188,167,112,.3);
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(190,171,119,.05);
+}
+.parallel-gear,
+.parallel-gear-left,
+.parallel-gear-right,
+.parallel-gear-bottom-left,
+.parallel-gear-bottom-right {
+  --orbit-start: 0deg;
+  --gear-speed: 42s;
+  left: 50%;
+  top: 50%;
+  width: var(--orbit-size);
+  height: var(--orbit-size);
+  margin: 0;
+  border: 1px solid rgba(170,150,99,.28);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: inset 0 0 20px rgba(174,154,101,.025), 0 0 18px rgba(174,154,101,.025);
+  filter: none;
+  opacity: 1;
+  z-index: 2;
+  transform: translate(-50%, -50%) rotate(var(--orbit-start));
+  animation: lunar-orbit-spin var(--gear-speed) linear infinite;
+}
+.parallel-gear-left {
+  --orbit-size: 41%;
+  --orbit-start: 18deg;
+  --gear-speed: 31s;
+}
+.parallel-gear-right {
+  --orbit-size: 57%;
+  --orbit-start: 112deg;
+  --gear-speed: 47s;
+  animation-name: lunar-orbit-spin-reverse;
+  animation-direction: normal;
+}
+.parallel-gear-bottom-left {
+  --orbit-size: 73%;
+  --orbit-start: 216deg;
+  --gear-speed: 63s;
+}
+.parallel-gear-bottom-right {
+  --orbit-size: 89%;
+  --orbit-start: 302deg;
+  --gear-speed: 82s;
+  animation-name: lunar-orbit-spin-reverse;
+  animation-direction: normal;
+}
+.parallel-gear::before {
+  inset: -5px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from -90deg, rgba(203,183,128,.48) 0 1deg, transparent 1deg 7.5deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 5px), #000 calc(50% - 4px) calc(50% - 2px), transparent calc(50% - 1px));
+  mask: radial-gradient(circle, transparent 0 calc(50% - 5px), #000 calc(50% - 4px) calc(50% - 2px), transparent calc(50% - 1px));
+  opacity: .52;
+}
+.parallel-gear::after {
+  inset: auto;
+  right: -4px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translate(50%, -50%);
+  border: 1px solid rgba(242,227,188,.76);
+  border-radius: 50%;
+  background: #171710;
+  box-shadow: 0 0 0 3px rgba(160,140,86,.08), 0 0 12px rgba(231,214,167,.28);
+}
+.parallel-gear-left::after { width: 5px; height: 5px; }
+.parallel-gear-bottom-left::after {
+  width: 9px;
+  height: 9px;
+  background: rgba(194,170,105,.62);
+}
+.parallel-gear-spokes {
+  inset: 0;
+  border: 0;
+  background: none;
+  -webkit-mask: none;
+  mask: none;
+}
+.parallel-gear-spokes::before,
+.parallel-gear-spokes::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgba(158,140,91,.13);
+}
+.parallel-gear-spokes::before {
+  width: 100%;
+  height: 1px;
+  transform: translate(-50%, -50%);
+}
+.parallel-gear-spokes::after {
+  width: 1px;
+  height: 100%;
+  transform: translate(-50%, -50%);
+}
+.parallel-gear-left .parallel-gear-spokes,
+.parallel-gear-right .parallel-gear-spokes {
+  display: none;
+}
+.parallel-moon-shell {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--moon-size);
+  height: var(--moon-size);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 7;
+  pointer-events: none;
+  filter: drop-shadow(0 0 20px rgba(242,230,201,.12));
+}
+.parallel-moon-shell::before {
+  content: "";
+  position: absolute;
+  inset: 4.7%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 66% 36%, rgba(65,68,63,.22), rgba(4,7,9,.96) 72%);
+  box-shadow: inset 0 0 2.2rem rgba(0,0,0,.9), 0 0 1.4rem rgba(159,177,179,.08);
+}
+.parallel-moon-shell::after {
+  content: "";
+  position: absolute;
+  inset: 4.6%;
+  border: 1px solid rgba(211,202,179,.14);
+  border-radius: 50%;
+  box-shadow: inset -1rem -.35rem 1.8rem rgba(0,0,0,.22);
+}
+.parallel-moon-shell .parallel-moon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: none;
+  object-fit: contain;
+  opacity: .13;
+  z-index: 1;
+  filter: grayscale(1) brightness(.3) contrast(1.15);
+}
+.parallel-moon-phase {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  filter: brightness(1.18) contrast(1.06) saturate(1.04) drop-shadow(0 0 14px rgba(255,244,222,.24));
+}
+.parallel-moon-aura {
+  position: absolute;
+  inset: -7%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(243,231,203,.13), transparent 67%);
+  opacity: var(--phase-glow, .08);
+  transform: scale(calc(.92 + var(--phase-scale, 0)));
+  transition: opacity .18s linear;
+}
+.parallel-progress {
+  position: absolute;
+  left: 50%;
+  bottom: 7%;
+  z-index: 9;
+  min-width: 11rem;
+  transform: translateX(-50%);
+  color: rgba(232,225,207,.86);
+  text-align: center;
+  font-family: IBMPlexMono, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 12px rgba(224,211,174,.18);
+}
+.parallel-progress-value {
+  display: block;
+  font-size: clamp(.78rem, 1.1vw, .98rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: .23em;
+}
+.parallel-progress-phase {
+  display: block;
+  margin-top: .68rem;
+  color: rgba(167,157,130,.66);
+  font-size: clamp(.48rem, .62vw, .62rem);
+  line-height: 1;
+  letter-spacing: .21em;
+  text-transform: uppercase;
+}
+.parallel-progress::before,
+.parallel-progress::after {
+  content: "";
+  position: absolute;
+  top: .34rem;
+  width: 2.2rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(178,159,107,.4));
+}
+.parallel-progress::before { right: calc(100% + .7rem); }
+.parallel-progress::after {
+  left: calc(100% + .7rem);
+  transform: scaleX(-1);
+}
+@keyframes lunar-orbit-spin {
+  from { transform: translate(-50%, -50%) rotate(var(--orbit-start)); }
+  to { transform: translate(-50%, -50%) rotate(calc(var(--orbit-start) + 360deg)); }
+}
+@keyframes lunar-orbit-spin-reverse {
+  from { transform: translate(-50%, -50%) rotate(var(--orbit-start)); }
+  to { transform: translate(-50%, -50%) rotate(calc(var(--orbit-start) - 360deg)); }
+}
+@media (max-width: 640px) {
+  .parallel-gears {
+    --moon-size: clamp(10rem, 43vmin, 15rem);
+    width: 96vmin;
+    height: 96vmin;
+  }
+  .parallel-progress { bottom: 2%; }
+  .parallel-progress::before,
+  .parallel-progress::after { width: 1.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #preloader::before,
+  #preloader::after,
+  .parallel-gear {
+    animation: none !important;
+  }
+}
 html { background: #000; }
 html:not(.about-copy-ready),
 html:not(.about-copy-ready) body,
@@ -1043,4 +1307,4 @@ document.querySelectorAll(".gzm-prompt-scroll").forEach(function (box) {
   box.addEventListener("wheel", function (e) { e.stopPropagation(); }, { passive: true });
   box.addEventListener("touchmove", function (e) { e.stopPropagation(); }, { passive: true });
 });
-</script></body></html>
+</script><script src="/lunar-preloader.js"></script></body></html>
