@@ -103,10 +103,16 @@
 
   var digitNodes = digits.querySelectorAll(".preloader-percent-digit");
   var progressDigit = digitNodes[digitNodes.length - 1];
+  /* Time-based floor: the moon starts waxing immediately and evenly from the
+     first frame instead of sitting dark while the runtime bundle boots.
+     Real progress takes over as soon as it exceeds the floor. */
+  var bootTime = performance.now();
+  function timeFloor() {
+    return 0.45 * Math.min(1, (performance.now() - bootTime) / 6000);
+  }
   function syncFromRuntime() {
-    if (typeof progressDigit._easedVal === "number") {
-      setProgress(progressDigit._easedVal / 100);
-    }
+    var real = typeof progressDigit._easedVal === "number" ? progressDigit._easedVal / 100 : 0;
+    setProgress(Math.max(real, timeFloor()));
     if (!preloader.classList.contains("parallel-preloader-done")) {
       window.requestAnimationFrame(syncFromRuntime);
     }
