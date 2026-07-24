@@ -627,6 +627,9 @@ window.addEventListener("DOMContentLoaded", function () {
     return rect.top < window.innerHeight && rect.bottom > 0;
   }
   function setWelcomeHidden(hidden) {
+    /* Keep the welcome title (AI Trainer · Model Evaluator) pinned at the
+       bottom while scrolling; never hide it. */
+    if (hidden) return;
     if (!root.classList.contains("about-copy-ready") || !isAboutHeroActive()) return;
     welcomeWaitToken++;
     window.clearTimeout(welcomeShowTimer);
@@ -1018,6 +1021,65 @@ Creative Director
   });
 })();
 </script><script>
+/* Sticky bottom title: keeps "AI Trainer · Model Evaluator" visible at the
+   bottom of the viewport while browsing the films/projects section (the
+   in-hero original gets covered once later sections scroll over the pinned
+   hero). Hidden over the hero itself (original shows there) and faded out
+   when the capability/end sections arrive so it never overlaps them. */
+(function () {
+  var title = document.createElement("div");
+  title.id = "gzm-sticky-title";
+  title.textContent = "AI Trainer · Model Evaluator";
+  document.body.appendChild(title);
+  if (!("IntersectionObserver" in window)) return;
+  var inFilms = false;
+  var covered = false;
+  function sync() {
+    title.classList.toggle("gzm-sticky-title-on", inFilms && !covered);
+  }
+  var filmsObserver = new IntersectionObserver(function (entries) {
+    inFilms = entries.some(function (e) { return e.isIntersecting; });
+    sync();
+  }, { threshold: 0.02 });
+  var coverObserver = new IntersectionObserver(function (entries) {
+    covered = entries.some(function (e) { return e.isIntersecting; });
+    sync();
+  }, { threshold: 0.05 });
+  var films = document.getElementById("about-clients");
+  if (films) filmsObserver.observe(films);
+  ["about-capability", "end-section"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) coverObserver.observe(el);
+  });
+})();
+</script><style id="gzm-sticky-title-style">
+#gzm-sticky-title {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--base-padding-y, 24px) + 0.4em);
+  z-index: 300;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: "Aeonik", "Aeonik Medium", "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(1.6em, 3.2vw, 3.2em);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: 0.02em;
+  color: rgba(246, 250, 252, 0.96);
+  background: linear-gradient(180deg, #fff 0%, #dfe8eb 44%, #8f9da3 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 18px rgba(214, 235, 241, 0.22), 0 14px 34px rgba(0, 0, 0, 0.72);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+html.about-copy-ready #gzm-sticky-title.gzm-sticky-title-on {
+  opacity: 1;
+}
+</style><script>
 /* The page uses a window-level virtual scroll that preventDefaults every wheel
    event. Stop propagation inside the prompt card so its own scrollbar works. */
 document.querySelectorAll(".gzm-prompt-scroll").forEach(function (box) {
