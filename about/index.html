@@ -969,11 +969,23 @@ Creative Director
   document.documentElement.classList.add("is-ready");
 }, 2500);
 </script><script>(function () {
+  var bgmVideos = [];
+  /* Duck site background audio while any video is audibly playing.
+     hoisted.js checks window.__bgmDucked in its master-volume ramp. */
+  function syncBgmDuck() {
+    window.__bgmDucked = bgmVideos.some(function (v) {
+      return !v.paused && !v.ended && !v.muted && v.volume > 0;
+    });
+  }
   document.querySelectorAll(".gzm-project-media").forEach(function (media) {
     var video = media.querySelector(".gzm-project-video");
     var soundBtn = media.querySelector(".gzm-project-sound");
     var soundText = media.querySelector(".gzm-project-sound-text");
     if (!video) return;
+    bgmVideos.push(video);
+    ["play", "pause", "ended", "volumechange"].forEach(function (evt) {
+      video.addEventListener(evt, syncBgmDuck);
+    });
     /* Play only while the card is on screen (the page uses virtual scroll via
        transforms; IntersectionObserver tracks rendered geometry, so this works). */
     if ("IntersectionObserver" in window) {
