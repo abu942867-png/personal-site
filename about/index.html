@@ -985,6 +985,20 @@ Creative Director
     ["play", "pause", "ended", "volumechange"].forEach(function (evt) {
       video.addEventListener(evt, syncBgmDuck);
     });
+    /* Sound defaults to ON. Browsers only allow muted autoplay, so videos
+       start muted and get unmuted on the user's first pointer/touch anywhere
+       on the page. video.dataset.wantSound tracks the desired state. */
+    function setSound(on) {
+      video.dataset.wantSound = on ? "1" : "0";
+      media.classList.toggle("gzm-sound-on", on);
+      if (soundText) soundText.textContent = on ? "声音 开" : "声音 关";
+      if (window.__gzmSoundUnlocked) {
+        video.muted = !on;
+        if (on && video.paused) video.play().catch(function () {});
+      }
+    }
+    video.__setSound = setSound;
+    setSound(true);
     /* Play only while the card is on screen (the page uses virtual scroll via
        transforms; IntersectionObserver tracks rendered geometry, so this works). */
     if ("IntersectionObserver" in window) {
@@ -1000,22 +1014,28 @@ Creative Director
     } else {
       video.play().catch(function () {});
     }
-    function setSound(on) {
-      video.muted = !on;
-      media.classList.toggle("gzm-sound-on", on);
-      if (soundText) soundText.textContent = on ? "声音 开" : "声音 关";
-      if (on && video.paused) video.play().catch(function () {});
-    }
     if (soundBtn) {
       soundBtn.addEventListener("click", function (e) {
         e.stopPropagation();
-        setSound(video.muted);
+        setSound(video.dataset.wantSound !== "1");
       });
     }
     media.addEventListener("click", function () {
-      setSound(video.muted);
+      setSound(video.dataset.wantSound !== "1");
     });
   });
+  function gzmUnlockSound() {
+    if (window.__gzmSoundUnlocked) return;
+    window.__gzmSoundUnlocked = true;
+    document.querySelectorAll(".gzm-project-video").forEach(function (v) {
+      if (v.dataset.wantSound === "1") {
+        v.muted = false;
+        v.play().catch(function () {});
+      }
+    });
+  }
+  document.addEventListener("pointerdown", gzmUnlockSound);
+  document.addEventListener("touchstart", gzmUnlockSound, { passive: true });
 })();
 </script><script>
 /* The page uses a window-level virtual scroll that preventDefaults every wheel
