@@ -41,11 +41,46 @@ export function createStaticServer() {
     if ((await stat(file).catch(() => null))?.isDirectory()) file = join(file, "index.html");
     const info = await stat(file);
     if (!info.isFile() || relative(root, file).startsWith("..")) throw new Error("not found");
-    res.writeHead(200, {
-      "cache-control": "no-store",
-      "content-type": types[extname(file)] || "application/octet-stream",
-    });
-    createReadStream(file).pipe(res);
+    const extension = extname(file).toLowerCase();
+    const isAsset = url.pathname.startsWith("/assets/") || url.pathname.startsWith("/_astro/");
+    const headers = {
+      "accept-ranges": "bytes",
+      "cache-control": isAsset ? "public, max-age=86400" : "no-cache",
+      "content-type": types[extension] || "application/octet-stream",
+    };
+    let start = 0;
+    let end = info.size - 1;
+    let statusCode = 200;
+    const range = req.headers.range;
+    if (range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!match || (!match[1] && !match[2])) {
+        res.writeHead(416, { ...headers, "content-range": `bytes */${info.size}` });
+        res.end();
+        return;
+      }
+      if (match[1]) {
+        start = Number(match[1]);
+        end = match[2] ? Math.min(Number(match[2]), info.size - 1) : end;
+      } else {
+        const suffixLength = Math.min(Number(match[2]), info.size);
+        start = info.size - suffixLength;
+      }
+      if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || start > end || start >= info.size) {
+        res.writeHead(416, { ...headers, "content-range": `bytes */${info.size}` });
+        res.end();
+        return;
+      }
+      statusCode = 206;
+      headers["content-range"] = `bytes ${start}-${end}/${info.size}`;
+    }
+    headers["content-length"] = String(end - start + 1);
+    res.writeHead(statusCode, headers);
+    if (req.method === "HEAD") {
+      res.end();
+      return;
+    }
+    createReadStream(file, { start, end }).pipe(res);
   } catch {
     res.writeHead(404, { "content-type": "text/plain" });
     res.end("Not found");
